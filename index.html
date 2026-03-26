@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Bloom — Event Discovery</title>
+<title>Pride Planner — Event Discovery</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <script src="events.js"></script>
 <style>
@@ -60,11 +60,11 @@
   .logo {
     font-family: 'DM Serif Display', serif;
     font-size: 1.6rem;
-    color: var(--accent);
     letter-spacing: -0.02em;
     flex-shrink: 0;
   }
-  .logo span { color: var(--text); }
+  .logo .rainbow-letter { display: inline-block; }
+  .logo .dot { color: var(--text); }
   .header-search {
     flex: 1; max-width: 440px;
     position: relative;
@@ -448,7 +448,11 @@
     flex-direction: column; gap: 14px;
     animation: fadeIn 0.1s ease;
   }
-  .loading-logo { font-family: 'DM Serif Display', serif; font-size: 2.4rem; color: var(--accent); }
+  .loading-logo {
+    font-family: 'DM Serif Display', serif;
+    font-size: 2.4rem;
+  }
+  .loading-logo .rainbow-letter { display: inline-block; }
   .loading-dots { display: flex; gap: 6px; }
   .loading-dot {
     width: 8px; height: 8px; border-radius: 50%;
@@ -484,7 +488,7 @@
 <body>
 
 <div id="loading" class="loading-overlay">
-  <div class="loading-logo">bloom.</div>
+  <div class="loading-logo" id="loadingLogo"></div>
   <div class="loading-dots">
     <div class="loading-dot"></div>
     <div class="loading-dot"></div>
@@ -494,7 +498,7 @@
 
 <div id="app" style="display:none">
   <header>
-    <div class="logo">bloom<span>.</span></div>
+    <div class="logo" id="headerLogo"></div>
     <div class="header-search">
       <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
       <input id="globalSearch" type="text" placeholder="Search events, locations…" oninput="onGlobalSearch(this.value)">
@@ -571,7 +575,7 @@ let state = {
   filterCategory: null,
   filterLocation: '',
   filterDate: '',
-  bookmarks: JSON.parse(localStorage.getItem('bloom_bookmarks') || '[]'),
+  bookmarks: JSON.parse(localStorage.getItem('prideplanner_bookmarks') || '[]'),
   darkMode: false,
 };
 
@@ -972,7 +976,7 @@ function toggleBookmark(id) {
   } else {
     state.bookmarks.push(id);
   }
-  localStorage.setItem('bloom_bookmarks', JSON.stringify(state.bookmarks));
+  localStorage.setItem('prideplanner_bookmarks', JSON.stringify(state.bookmarks));
   renderMain();
 }
 
@@ -997,6 +1001,22 @@ document.addEventListener('keydown', e => {
     renderMain();
   }
 });
+
+// ─── RAINBOW LOGO ────────────────────────────────────────────────────────────
+const RAINBOW = ['#e63946','#e07a2f','#f4c842','#42b883','#3a86ff','#7b5ea7','#e63984'];
+function rainbowHTML(text, includeDot) {
+  const letters = [...text];
+  let colorIdx = 0;
+  const spans = letters.map(ch => {
+    if (ch === ' ') return '<span style="display:inline-block;width:0.28em"></span>';
+    const color = RAINBOW[colorIdx % RAINBOW.length];
+    colorIdx++;
+    return `<span class="rainbow-letter" style="color:${color}">${ch}</span>`;
+  }).join('');
+  return spans + (includeDot ? '<span class="dot">.</span>' : '');
+}
+document.getElementById('headerLogo').innerHTML  = rainbowHTML('Pride Planner', true);
+document.getElementById('loadingLogo').innerHTML = rainbowHTML('Pride Planner', true);
 </script>
 </body>
 </html>
